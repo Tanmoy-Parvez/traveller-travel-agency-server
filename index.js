@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
@@ -16,17 +17,36 @@ async function run() {
     try {
         await client.connect();
         const database = client.db("travelAgency")
-        const toursCollections = database.collection("tours");
-        const newsCollections = database.collection("news");
+        const toursCollection = database.collection("tours");
+        const newsCollection = database.collection("news");
+        const bookingCollection = database.collection("bookings");
 
         //GET API load all packages data
         app.get("/tours", async (req, res) => {
-            const result = await toursCollections.find({}).toArray();
+            const result = await toursCollection.find({}).toArray();
+            res.send(result);
+        });
+        app.get("/tour/:id", async (req, res) => {
+            const id = req.params.id;
+            const result = await toursCollection.findOne({ _id: ObjectId(id) });
             res.send(result);
         });
         //GET API load all news data
         app.get("/news", async (req, res) => {
-            const result = await newsCollections.find({}).toArray();
+            const result = await newsCollection.find({}).toArray();
+            res.send(result);
+        });
+
+        //GET API load all news data
+        app.post("/booking", async (req, res) => {
+            const tour = req.body;
+            const result = await bookingCollection.insertOne(tour);
+            res.send(result);
+        });
+
+        //GET API load all news data
+        app.get("/myBookings", async (req, res) => {
+            const result = await bookingCollection.find({}).toArray();
             res.send(result);
         });
 
