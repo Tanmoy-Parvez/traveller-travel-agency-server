@@ -31,13 +31,18 @@ async function run() {
             const result = await toursCollection.findOne({ _id: ObjectId(id) });
             res.send(result);
         });
+        app.post("/add", async (req, res) => {
+            const newTour = req.body;
+            const result = await toursCollection.insertOne(newTour);
+            res.send(result);
+        });
         //GET API load all news data
         app.get("/news", async (req, res) => {
             const result = await newsCollection.find({}).toArray();
             res.send(result);
         });
 
-        //GET API load all news data
+        //
         app.post("/booking", async (req, res) => {
             const tour = req.body;
             const result = await bookingCollection.insertOne(tour);
@@ -45,10 +50,32 @@ async function run() {
         });
 
         //GET API load all news data
-        app.get("/myBookings", async (req, res) => {
+        app.get("/myBookings/:email", async (req, res) => {
+            const email = req.params.email
+            const result = await bookingCollection.find({ email: (email) }).toArray();
+            res.send(result);
+        });
+
+        // delete a single booking from myBookings
+        app.delete("/myBookings/:id", async (req, res) => {
+            const id = req.params.id
+            const result = await bookingCollection.deleteOne({ _id: ObjectId(id) });
+            res.send(result);
+        });
+
+        // delete a single booking from myBookings
+        app.delete("/allBookings/:id", async (req, res) => {
+            const id = req.params.id;
+            const result = await bookingCollection.deleteOne({ _id: ObjectId(id) });
+            res.send(result);
+        });
+
+        // load all bookings
+        app.get("/allBookings", async (req, res) => {
             const result = await bookingCollection.find({}).toArray();
             res.send(result);
         });
+
 
     }
     finally {
