@@ -76,6 +76,31 @@ async function run() {
             res.send(result);
         });
 
+        // find specific data to update
+        app.get("/allBookings/:id", async (req, res) => {
+            const id = req.params.id;
+            const result = await bookingCollection.findOne({ _id: ObjectId(id) });
+            res.send(result);
+        });
+        // update Status
+        app.put("/allBookings/:id", async (req, res) => {
+            const id = req.params.id;
+            const updateStatus = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    status: updateStatus.status,
+                },
+            };
+            const result = await bookingCollection.updateOne(
+                filter,
+                updateDoc,
+            );
+            console.log("Update user", result);
+            res.json(result);
+        });
+
+
 
     }
     finally {
