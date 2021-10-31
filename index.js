@@ -21,54 +21,53 @@ async function run() {
         const newsCollection = database.collection("news");
         const bookingCollection = database.collection("bookings");
 
-        //GET API load all packages data
+        //GET API load all tours data
         app.get("/tours", async (req, res) => {
             const result = await toursCollection.find({}).toArray();
             res.send(result);
         });
+
+        //load a specific tour data by it's id
         app.get("/tour/:id", async (req, res) => {
             const id = req.params.id;
             const result = await toursCollection.findOne({ _id: ObjectId(id) });
             res.send(result);
         });
+
+        //create or post a single tour 
         app.post("/add", async (req, res) => {
             const newTour = req.body;
             const result = await toursCollection.insertOne(newTour);
             res.send(result);
         });
+
         //GET API load all news data
         app.get("/news", async (req, res) => {
             const result = await newsCollection.find({}).toArray();
             res.send(result);
         });
 
-        //
+        //book a tour 
         app.post("/booking", async (req, res) => {
             const tour = req.body;
             const result = await bookingCollection.insertOne(tour);
             res.send(result);
         });
 
-        //GET API load all news data
+        //GET API load my booking tours by my email
         app.get("/myBookings/:email", async (req, res) => {
             const email = req.params.email
             const result = await bookingCollection.find({ email: (email) }).toArray();
             res.send(result);
         });
 
-        // delete a single booking from myBookings
+        // delete a single booking from my bookings
         app.delete("/myBookings/:id", async (req, res) => {
             const id = req.params.id
             const result = await bookingCollection.deleteOne({ _id: ObjectId(id) });
             res.send(result);
         });
 
-        // delete a single booking from myBookings
-        app.delete("/allBookings/:id", async (req, res) => {
-            const id = req.params.id;
-            const result = await bookingCollection.deleteOne({ _id: ObjectId(id) });
-            res.send(result);
-        });
 
         // load all bookings
         app.get("/allBookings", async (req, res) => {
@@ -96,8 +95,14 @@ async function run() {
                 filter,
                 updateDoc,
             );
-            console.log("Update user", result);
             res.json(result);
+        });
+
+        // delete a single booking from all bookings
+        app.delete("/allBookings/:id", async (req, res) => {
+            const id = req.params.id;
+            const result = await bookingCollection.deleteOne({ _id: ObjectId(id) });
+            res.send(result);
         });
 
     }
